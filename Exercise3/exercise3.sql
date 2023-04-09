@@ -49,22 +49,22 @@ not employee.first_name='Nancy';
 -- Question 6
 -- Fetch max salary,min salary and avg salary by job id and department id but only for folks who worked in more than one role(job) in a department.
 
-select e.department_id, e.job_id, MAX(e.salary), MIN(e.salary), AVG(e.salary)
-from employee e
-join job_history jh1 on e.employee_id = jh1.employee_id
-join job_history jh2 on e.employee_id = jh2.employee_id and jh1.start_date < jh2.start_date
-group by e.department_id, e.job_id;
+select j1.department_id, j1.job_id, MAX(e.salary) as max_sal, MIN(e.salary) as min_sal, AVG(e.salary) as avg_sal 
+from job_history j1 
+join job_history j2  
+on j1.employee_id = j2.employee_id and j1.department_id = j2.department_id and j1.job_id != j2.job_id 
+join employee e 
+on j1.employee_id = e.employee_id 
+group by j1.job_id,j1.department_id;
 
 -- Question 7
 -- Display the employee count in each department and also in the same result.
 -- Info: * the total employee count categorized as "Total"
 -- • the null department count categorized as "-" *
-select department_id,iff(department_id is null,"-",count(employee_id)) as employee_count from employee group by department_id;
-SELECT COALESCE(department_id, '-') as department_id,
+SELECT COALESCE(TO_VARCHAR(e.department_id), '-') as department_id,
        COUNT(*) as employee_count 
-FROM   employee 
-GROUP  BY department_id;
-
+FROM  employee e
+GROUP BY e.department_id;
 -- Question 8
 -- Display the jobs held and the employee count.
 -- Hint: every employee is part of at least 1 job Hint: use the previous questions answer Sample
